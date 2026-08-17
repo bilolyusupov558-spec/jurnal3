@@ -2,3 +2,4 @@
 # jadval
 # jurnal22
 # jurnal12
+# jurnal...
