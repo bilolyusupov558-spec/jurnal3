@@ -1,0 +1,1571 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jurnal — O'qituvchi kabineti</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0B1120">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Jurnal">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-900:#0B1120;
+    --navy-800:#121A2E;
+    --navy-700:#1A2337;
+    --navy-line:rgba(255,255,255,0.08);
+    --teal-500:#14B8A6;
+    --teal-400:#2DD4BF;
+    --teal-600:#0D9488;
+    --teal-wash:rgba(45,212,191,0.14);
+    --bg:#F5F7FB;
+    --card:#FFFFFF;
+    --border:#E7EAF2;
+    --ink-900:#0F172A;
+    --ink-600:#5B667A;
+    --ink-400:#96A0B4;
+    --amber:#E3922E;
+    --red:#DC5B4F;
+    --gold:#C79A3E;
+    --blue:#3E6E9E;
+    --shadow-sm:0 1px 2px rgba(15,23,42,0.06);
+    --shadow-md:0 8px 24px rgba(15,23,42,0.08);
+    --shadow-lg:0 16px 40px rgba(15,23,42,0.12);
+    --radius-lg:18px;
+    --radius-md:12px;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink-900);
+    font-family:'Manrope',sans-serif; -webkit-font-smoothing:antialiased;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important;}
+  }
+  button{font-family:inherit;}
+
+  .app{ display:flex; min-height:100vh;}
+
+  /* ---------------- SIDEBAR ---------------- */
+  .sidebar{
+    width:272px; flex-shrink:0; background:var(--navy-900);
+    display:flex; flex-direction:column; padding:20px 16px 22px;
+    position:relative;
+  }
+  .brand{
+    display:flex; align-items:center; gap:12px;
+    padding:8px 8px 22px; border-bottom:1px solid var(--navy-line); margin-bottom:14px;
+    opacity:0; animation:fadeDown .5s ease forwards;
+  }
+  .brand .mark{
+    width:42px; height:42px; border-radius:12px; flex-shrink:0;
+    background:linear-gradient(150deg,var(--teal-400),var(--teal-600));
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 6px 16px rgba(20,184,166,0.35);
+  }
+  .brand .mark svg{width:22px;height:22px; color:#fff;}
+  .brand h1{ margin:0; font-size:17px; font-weight:800; color:#fff; letter-spacing:0.1px;}
+  .brand p{ margin:2px 0 0; font-size:12px; color:rgba(255,255,255,0.45);}
+
+  nav.nav{ display:flex; flex-direction:column; gap:2px;}
+  nav.nav button{
+    all:unset; box-sizing:border-box; cursor:pointer;
+    display:flex; align-items:center; gap:12px;
+    padding:11px 14px; border-radius:10px;
+    color:rgba(255,255,255,0.62); font-size:14.5px; font-weight:600;
+    position:relative;
+    opacity:0; transform:translateX(-10px);
+    animation:navIn .45s ease forwards;
+  }
+  nav.nav button:nth-child(1){animation-delay:.05s;}
+  nav.nav button:nth-child(2){animation-delay:.1s;}
+  nav.nav button:nth-child(3){animation-delay:.15s;}
+  nav.nav button:nth-child(4){animation-delay:.2s;}
+  nav.nav button:nth-child(5){animation-delay:.25s;}
+  nav.nav button:nth-child(6){animation-delay:.3s;}
+  nav.nav button:nth-child(7){animation-delay:.35s;}
+  nav.nav button svg{ width:19px; height:19px; flex-shrink:0;}
+  nav.nav button:hover{ background:rgba(255,255,255,0.05); color:#fff;}
+  nav.nav button.active{ background:var(--teal-wash); color:var(--teal-400);}
+  nav.nav button .dot{
+    margin-left:auto; width:7px;height:7px;border-radius:50%;
+    background:var(--teal-400); flex-shrink:0;
+    animation:dotPulse 1.8s ease-in-out infinite;
+  }
+
+  .sidebar-bottom{
+    margin-top:auto; padding:16px 12px 4px; border-top:1px solid var(--navy-line);
+  }
+  .sidebar-bottom .label{ font-size:12px; color:rgba(255,255,255,0.4);}
+  .sidebar-bottom .big-num{
+    font-size:26px; font-weight:800; color:#fff; margin-top:4px;
+    font-family:'IBM Plex Mono',monospace;
+  }
+
+  /* ---------------- MAIN ---------------- */
+  main{ flex:1; min-width:0; display:flex; flex-direction:column;}
+  .page-header{
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    padding:26px 40px; background:var(--card); border-bottom:1px solid var(--border);
+    flex-wrap:wrap;
+  }
+  .page-header h2{ margin:0; font-size:24px; font-weight:800;}
+  .btn-primary{
+    all:unset; cursor:pointer; display:inline-flex; align-items:center; gap:7px;
+    background:var(--teal-500); color:#fff; font-weight:700; font-size:14px;
+    padding:11px 18px; border-radius:11px; box-shadow:0 4px 12px rgba(20,184,166,0.3);
+    transition:transform .15s, box-shadow .15s;
+  }
+  .btn-primary:hover{ transform:translateY(-1px); box-shadow:0 8px 18px rgba(20,184,166,0.4);}
+  .btn-primary:active{ transform:translateY(0) scale(0.98);}
+  .btn-primary svg{width:15px;height:15px;}
+  .btn-ghost{
+    all:unset; cursor:pointer; padding:9px 14px; border-radius:9px; font-size:13.5px; font-weight:600;
+    color:var(--ink-600); border:1px solid var(--border); background:#fff;
+    transition:background .15s, border-color .15s;
+  }
+  .btn-ghost:hover{ background:var(--bg); border-color:#d5dae6;}
+
+  .page-body{ padding:30px 40px 60px; flex:1;}
+  .page{ display:none;}
+  .page.active{ display:block; animation:pageIn .45s ease;}
+
+  .meta-row{ display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; color:var(--ink-600); font-size:13.5px;}
+
+  .class-filter{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:22px;}
+  .class-filter button{
+    all:unset; cursor:pointer; padding:8px 15px; border-radius:20px; font-size:13px; font-weight:700;
+    background:#fff; border:1px solid var(--border); color:var(--ink-600);
+    transition:background .15s, color .15s, border-color .15s;
+  }
+  .class-filter button.active{ background:var(--navy-900); color:var(--teal-400); border-color:var(--navy-900);}
+
+  /* ---- Class cards ---- */
+  .class-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); gap:18px;}
+  .class-card{
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius-lg);
+    padding:22px; cursor:pointer; text-align:left; box-shadow:var(--shadow-sm);
+    transition:transform .18s ease, box-shadow .18s ease, border-color .18s;
+    opacity:0; transform:translateY(10px); animation:cardIn .45s ease forwards;
+  }
+  .class-card:hover{ transform:translateY(-4px); box-shadow:var(--shadow-lg); border-color:#d7dceb;}
+  .class-card .cc-icon{
+    width:46px; height:46px; border-radius:13px; margin-bottom:16px;
+    background:linear-gradient(150deg,var(--teal-400),var(--teal-600));
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 6px 14px rgba(20,184,166,0.3);
+  }
+  .class-card .cc-icon svg{ width:22px;height:22px; color:#fff;}
+  .class-card h3{ margin:0 0 4px; font-size:18px; font-weight:800;}
+  .class-card .cc-subject{ color:var(--teal-600); font-weight:700; font-size:13.5px; margin-bottom:6px;}
+  .class-card .cc-note{ color:var(--ink-400); font-size:13px;}
+
+  .add-class-card{
+    border:1.5px dashed #c9d0e0; border-radius:var(--radius-lg); background:transparent;
+    display:none; flex-direction:column; gap:10px; padding:20px;
+  }
+  .add-class-card.open{ display:flex; animation:cardIn .3s ease;}
+  .add-class-card input{
+    all:unset; box-sizing:border-box; width:100%; padding:9px 12px; border-radius:9px;
+    background:#fff; border:1px solid var(--border); font-size:13.5px;
+  }
+  .add-class-card .row{ display:flex; gap:8px;}
+
+  /* ---- Tables / lists ---- */
+  .table-wrap{
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius-lg);
+    overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; box-shadow:var(--shadow-sm);
+  }
+  table{ width:100%; border-collapse:collapse; font-size:13.8px;}
+  thead th{
+    text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:0.7px; font-weight:700;
+    color:var(--ink-400); background:#FAFBFD; padding:13px 18px; border-bottom:1px solid var(--border);
+  }
+  tbody td{ padding:13px 18px; border-bottom:1px solid var(--border);}
+  tbody tr:last-child td{ border-bottom:none;}
+  tbody tr:hover{ background:#FAFBFD;}
+  .stu{ display:flex; align-items:center; gap:11px; font-weight:600;}
+  .stu-av{
+    width:32px;height:32px;border-radius:50%; flex-shrink:0;
+    background:linear-gradient(150deg,#7C8CB0,#485576); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-size:12px; font-weight:700;
+  }
+  .badge{ font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:12px; padding:4px 10px; border-radius:20px; display:inline-block;}
+
+  /* ---- Journal stamps / attendance ---- */
+  .j-cell{ min-width:118px;}
+  .stamps{ display:flex; gap:5px; flex-wrap:wrap; margin-bottom:5px; min-height:24px;}
+  .stamp{
+    width:23px;height:23px;border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:11.5px; color:#fff;
+    box-shadow:0 2px 4px rgba(0,0,0,0.18); cursor:pointer; transition:transform .12s;
+  }
+  .stamp:hover{ transform:translateY(-2px) scale(1.08);}
+  .stamp.g5{background:var(--gold);}
+  .stamp.g4{background:var(--teal-600);}
+  .stamp.g3{background:var(--amber);}
+  .stamp.g2{background:var(--red);}
+  .edit-menu{
+    display:flex; gap:4px; margin-top:6px; align-items:center;
+  }
+  .edit-menu.hidden{ display:none;}
+  .edit-menu button{
+    all:unset; cursor:pointer; width:21px;height:21px; border-radius:6px; text-align:center;
+    font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:11px; color:#fff; transition:transform .12s;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .edit-menu button:hover{ transform:translateY(-2px);}
+  .edit-menu button[data-score="5"]{background:var(--gold);}
+  .edit-menu button[data-score="4"]{background:var(--teal-600);}
+  .edit-menu button[data-score="3"]{background:var(--amber);}
+  .edit-menu button[data-score="2"]{background:var(--red);}
+  .edit-menu .del-btn{ background:#EEF1F7; color:var(--ink-600); font-size:13px;}
+  .edit-menu .del-btn:hover{ background:rgba(220,91,79,0.15); color:var(--red);}
+  .stamp.stamp-in{ animation:stampPress .4s cubic-bezier(.3,1.6,.5,1);}
+  .add-btn{
+    all:unset; cursor:pointer; width:21px;height:21px;border-radius:6px;
+    border:1px dashed #c9d0e0; color:var(--ink-400); font-size:13px; line-height:1;
+    display:flex; align-items:center; justify-content:center; transition:background .15s, border-color .15s, transform .15s;
+  }
+  .add-btn:hover{ background:var(--teal-wash); border-color:var(--teal-500); transform:scale(1.08); color:var(--teal-600);}
+  .picker{ display:flex; gap:4px; margin-top:6px;}
+  .picker.hidden{ display:none;}
+  .picker button{
+    all:unset; cursor:pointer; width:21px;height:21px; border-radius:6px; text-align:center;
+    font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:11px; color:#fff; transition:transform .12s;
+  }
+  .picker button:hover{ transform:translateY(-2px);}
+  .picker button[data-score="5"]{background:var(--gold);}
+  .picker button[data-score="4"]{background:var(--teal-600);}
+  .picker button[data-score="3"]{background:var(--amber);}
+  .picker button[data-score="2"]{background:var(--red);}
+
+  .att-cell{
+    all:unset; cursor:pointer; width:32px;height:32px; border-radius:9px;
+    display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700;
+    margin:0 auto; background:#EEF1F7; color:var(--ink-400); transition:transform .15s;
+  }
+  .att-cell.bor{ background:rgba(20,184,166,0.14); color:var(--teal-600);}
+  .att-cell.kech{ background:rgba(227,146,46,0.15); color:var(--amber);}
+  .att-cell.yoq{ background:rgba(220,91,79,0.14); color:var(--red);}
+  .att-cell.pulse{ animation:pulseCell .35s ease;}
+  .legend{ display:flex; gap:18px; font-size:12.5px; color:var(--ink-600); margin-bottom:16px;}
+  .legend span{ display:inline-flex; align-items:center; gap:6px;}
+  .legend i{ width:11px;height:11px;border-radius:4px; display:inline-block;}
+
+  .segmented{ display:inline-flex; background:#EEF1F7; border-radius:11px; padding:4px; margin-bottom:20px;}
+  .segmented button{
+    all:unset; cursor:pointer; padding:8px 18px; border-radius:8px; font-size:13.5px; font-weight:700; color:var(--ink-600);
+    transition:background .18s, color .18s;
+  }
+  .segmented button.active{ background:#fff; color:var(--ink-900); box-shadow:var(--shadow-sm);}
+
+  /* ---- Lessons ---- */
+  .lesson-form{
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius-lg);
+    padding:18px 20px; margin-bottom:18px; display:none; gap:10px; flex-wrap:wrap; align-items:flex-end;
+  }
+  .lesson-form.open{ display:flex; animation:cardIn .3s ease;}
+  .lesson-form .field{ display:flex; flex-direction:column; gap:6px;}
+  .lesson-form label{ font-size:12px; color:var(--ink-600); font-weight:700;}
+  .lesson-form input{
+    all:unset; box-sizing:border-box; padding:9px 12px; border-radius:9px; border:1px solid var(--border);
+    background:#fff; font-size:13.5px; min-width:180px;
+  }
+  .lesson-list2{ display:flex; flex-direction:column; gap:10px;}
+  .lesson-card{
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius-md);
+    padding:16px 18px; display:flex; align-items:center; gap:16px; box-shadow:var(--shadow-sm);
+    opacity:0; transform:translateY(8px); animation:cardIn .4s ease forwards;
+  }
+  .lesson-date{
+    font-family:'IBM Plex Mono',monospace; font-size:12.5px; font-weight:700; color:var(--teal-600);
+    background:var(--teal-wash); padding:6px 11px; border-radius:8px; flex-shrink:0;
+  }
+  .lesson-topic{ font-weight:700; font-size:14px;}
+  .lesson-class{ margin-left:auto; font-size:12.5px; color:var(--ink-400); font-weight:600;}
+
+  /* ---- Schedule ---- */
+  .schedule-grid{
+    display:grid; grid-template-columns:70px repeat(6,1fr); gap:8px;
+  }
+  .schedule-grid .sh-head{
+    font-size:11.5px; font-weight:800; color:var(--ink-600); text-transform:uppercase; letter-spacing:0.5px;
+    text-align:center; padding:8px 0;
+  }
+  .schedule-grid .sh-time{
+    font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-400); padding:14px 4px; text-align:right;
+  }
+  .sh-time-wrap{ display:flex; align-items:center; justify-content:flex-end; gap:3px; padding:4px 2px;}
+  .sh-time-btn{
+    all:unset; cursor:pointer; font-family:'IBM Plex Mono',monospace; font-size:11.5px; font-weight:700;
+    color:var(--ink-600); padding:4px 6px; border-radius:6px; transition:background .15s;
+  }
+  .sh-time-btn:hover{ background:var(--teal-wash); color:var(--teal-600);}
+  .sh-time-del{
+    all:unset; cursor:pointer; width:16px;height:16px; border-radius:5px; display:flex; align-items:center; justify-content:center;
+    font-size:9px; color:var(--ink-400); opacity:0; transition:opacity .15s, background .15s, color .15s;
+  }
+  .sh-time-wrap:hover .sh-time-del{ opacity:1;}
+  .sh-time-del:hover{ background:rgba(220,91,79,0.15); color:var(--red);}
+  .schedule-grid .sh-cell{
+    background:var(--card); border:1px solid var(--border); border-radius:10px; min-height:56px;
+    padding:8px 10px; font-size:12px; font-weight:700; color:var(--ink-600);
+    display:flex; align-items:center; justify-content:center; text-align:center;
+  }
+  .schedule-grid .sh-cell.filled{ background:var(--teal-wash); color:var(--teal-600); border-color:transparent;}
+  .schedule-grid .sh-cell.empty{ color:#cdd3e0; font-weight:500;}
+  .sh-wrap{ position:relative;}
+  .sh-cell{ all:unset; box-sizing:border-box; width:100%; cursor:pointer; transition:transform .12s, box-shadow .12s;}
+  .sh-cell:hover{ transform:translateY(-1px); box-shadow:var(--shadow-sm);}
+  .sh-picker{
+    position:absolute; top:calc(100% + 4px); left:0; z-index:30; min-width:150px;
+    background:#fff; border:1px solid var(--border); border-radius:11px; padding:6px;
+    box-shadow:var(--shadow-lg); display:flex; flex-direction:column; gap:2px;
+  }
+  .sh-picker.hidden{ display:none;}
+  .sh-picker button{
+    all:unset; cursor:pointer; padding:8px 10px; border-radius:7px; font-size:12.5px; font-weight:700;
+    color:var(--ink-600); transition:background .12s, color .12s;
+  }
+  .sh-picker button:hover{ background:var(--teal-wash); color:var(--teal-600);}
+  .sh-picker button.clear-opt{ color:var(--red); border-top:1px solid var(--border); margin-top:2px; padding-top:9px;}
+  .sh-picker button.clear-opt:hover{ background:rgba(220,91,79,0.1);}
+
+  .icon-del{
+    all:unset; cursor:pointer; width:24px;height:24px; border-radius:7px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; color:var(--ink-400); font-size:13px;
+    transition:background .15s, color .15s;
+  }
+  .icon-del:hover{ background:rgba(220,91,79,0.12); color:var(--red);}
+  .class-card{ position:relative;}
+  .class-card .cc-del{
+    position:absolute; top:14px; right:14px; opacity:0; transition:opacity .15s;
+  }
+  .class-card:hover .cc-del{ opacity:1;}
+
+  /* ---- Statistics ---- */
+  .stat-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px;}
+  .stat-card{
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius-lg);
+    padding:20px; box-shadow:var(--shadow-sm);
+  }
+  .stat-card .icn{ width:36px;height:36px;border-radius:10px; display:flex; align-items:center; justify-content:center; margin-bottom:14px;}
+  .stat-card .icn svg{width:18px;height:18px;}
+  .stat-card .val{ font-size:28px; font-weight:800; font-family:'IBM Plex Mono',monospace;}
+  .stat-card .lbl{ font-size:12.5px; color:var(--ink-600); margin-top:4px;}
+
+  .grid-2{ display:grid; grid-template-columns:1.25fr 1fr; gap:18px; align-items:start;}
+  .panel{ background:var(--card); border:1px solid var(--border); border-radius:var(--radius-lg); padding:22px 24px; box-shadow:var(--shadow-sm);}
+  .panel h3{ margin:0 0 16px; font-size:16px; font-weight:800;}
+  .bar-row{ margin-bottom:14px;}
+  .bar-top{ display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:5px; color:var(--ink-600);}
+  .bar-track{ height:9px; border-radius:6px; background:#EEF1F7; overflow:hidden;}
+  .bar-fill{ height:100%; border-radius:6px; width:0; transition:width 1s cubic-bezier(.2,.8,.2,1); background:linear-gradient(90deg,var(--teal-500),var(--teal-400));}
+
+  .chart-row{ display:flex; align-items:flex-end; gap:22px; height:200px; padding:14px 6px 0;}
+  .chart-col{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%;}
+  .chart-bar{ width:52px; border-radius:9px 9px 3px 3px; height:0; background:linear-gradient(180deg,var(--teal-400),var(--teal-600)); transition:height 1s cubic-bezier(.2,.8,.2,1); position:relative; box-shadow:var(--shadow-sm);}
+  .chart-bar .chart-val{ position:absolute; top:-22px; left:0; right:0; text-align:center; font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:12.5px;}
+  .chart-lbl{ margin-top:9px; font-size:12.5px; color:var(--ink-600); font-weight:700;}
+
+  .top-list{ list-style:none; margin:0; padding:0;}
+  .top-list li{ display:flex; align-items:center; gap:12px; padding:11px 0; border-bottom:1px dashed var(--border);}
+  .top-list li:last-child{ border-bottom:none;}
+  .rank{ width:25px;height:25px;border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px; background:#EEF1F7; color:var(--ink-600);}
+  .rank.r1{background:var(--gold); color:#fff;} .rank.r2{background:#B9C2BA; color:#233A2E;} .rank.r3{background:#CF9A6B; color:#fff;}
+  .top-list .name{ flex:1; font-size:13.5px; font-weight:700;}
+  .top-list .score{ font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:13px; color:var(--teal-600);}
+
+  /* ---- Settings ---- */
+  .settings-card{ background:var(--card); border:1px solid var(--border); border-radius:var(--radius-lg); padding:26px; max-width:520px; box-shadow:var(--shadow-sm);}
+  .settings-card .field{ margin-bottom:18px; display:flex; flex-direction:column; gap:7px;}
+  .settings-card label{ font-size:12.5px; font-weight:700; color:var(--ink-600);}
+  .settings-card input[type=text]{
+    all:unset; box-sizing:border-box; padding:11px 13px; border-radius:10px; border:1px solid var(--border); background:#fff; font-size:14px;
+  }
+  .toggle-row{ display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-top:1px solid var(--border);}
+  .toggle-row .t-label{ font-size:13.5px; font-weight:700;}
+  .toggle-row .t-sub{ font-size:12px; color:var(--ink-400); margin-top:2px;}
+  .switch{ width:42px; height:24px; border-radius:14px; background:#DCE1EC; position:relative; cursor:pointer; transition:background .2s; flex-shrink:0;}
+  .switch.on{ background:var(--teal-500);}
+  .switch::after{ content:""; position:absolute; top:3px; left:3px; width:18px;height:18px; border-radius:50%; background:#fff; transition:transform .2s; box-shadow:0 1px 3px rgba(0,0,0,0.25);}
+  .switch.on::after{ transform:translateX(18px);}
+  .toast{
+    position:fixed; bottom:26px; right:26px; background:var(--navy-900); color:#fff; padding:12px 20px;
+    border-radius:11px; font-size:13.5px; font-weight:700; display:flex; align-items:center; gap:8px;
+    box-shadow:0 12px 28px rgba(0,0,0,0.25); opacity:0; transform:translateY(10px); pointer-events:none; transition:opacity .25s, transform .25s;
+    z-index:50;
+  }
+  .toast.show{ opacity:1; transform:translateY(0);}
+
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(11,17,32,0.5); z-index:100;
+    display:flex; align-items:center; justify-content:center; padding:20px;
+    opacity:1; transition:opacity .18s;
+  }
+  .modal-overlay.hidden{ display:none;}
+  .modal-box{
+    background:#fff; border-radius:18px; padding:26px; width:100%; max-width:400px;
+    box-shadow:0 24px 60px rgba(0,0,0,0.3);
+    animation:modalIn .22s cubic-bezier(.2,.9,.3,1.2);
+  }
+  .modal-box h3{ margin:0 0 8px; font-size:17px; font-weight:800;}
+  .modal-msg{ margin:0 0 16px; font-size:13.5px; color:var(--ink-600); line-height:1.5;}
+  .modal-msg.hidden{ display:none;}
+  #modalFields .field{ display:flex; flex-direction:column; gap:6px; margin-bottom:14px;}
+  #modalFields label{ font-size:12.5px; font-weight:700; color:var(--ink-600);}
+  #modalFields input{
+    all:unset; box-sizing:border-box; padding:10px 12px; border-radius:10px; border:1px solid var(--border);
+    background:#fff; font-size:14px;
+  }
+  #modalFields input:focus{ border-color:var(--teal-500);}
+  .modal-actions{ display:flex; justify-content:flex-end; gap:10px; margin-top:6px;}
+  .btn-primary.danger{ background:var(--red); box-shadow:0 4px 12px rgba(220,91,79,0.3);}
+  .btn-primary.danger:hover{ box-shadow:0 8px 18px rgba(220,91,79,0.4);}
+  @keyframes modalIn{ from{opacity:0; transform:scale(0.93) translateY(8px);} to{opacity:1; transform:scale(1) translateY(0);} }
+
+  .reminder-container{
+    position:fixed; top:20px; right:20px; z-index:200;
+    display:flex; flex-direction:column; gap:10px; max-width:340px;
+  }
+  .reminder-card{
+    background:var(--navy-900); color:#fff; border-radius:14px; padding:15px 16px;
+    display:flex; align-items:flex-start; gap:12px; box-shadow:0 16px 36px rgba(0,0,0,0.3);
+    animation:reminderIn .35s cubic-bezier(.2,.9,.3,1.2);
+    border-left:3px solid var(--teal-400);
+  }
+  .reminder-card.leaving{ animation:reminderOut .25s ease forwards;}
+  .reminder-card .r-icon{
+    width:34px;height:34px;border-radius:10px; flex-shrink:0;
+    background:var(--teal-wash); color:var(--teal-400);
+    display:flex; align-items:center; justify-content:center;
+    animation:bellRing 1.4s ease 2;
+  }
+  .reminder-card .r-icon svg{ width:18px;height:18px;}
+  .reminder-card .r-body{ flex:1; min-width:0;}
+  .reminder-card .r-title{ font-size:13.5px; font-weight:800; margin-bottom:3px;}
+  .reminder-card .r-sub{ font-size:12.5px; color:rgba(255,255,255,0.65); line-height:1.4;}
+  .reminder-card .r-close{
+    all:unset; cursor:pointer; color:rgba(255,255,255,0.5); font-size:13px; padding:2px 4px; border-radius:5px; flex-shrink:0;
+  }
+  .reminder-card .r-close:hover{ background:rgba(255,255,255,0.1); color:#fff;}
+  @keyframes reminderIn{ from{opacity:0; transform:translateX(24px);} to{opacity:1; transform:translateX(0);} }
+  @keyframes reminderOut{ to{opacity:0; transform:translateX(24px);} }
+  @keyframes bellRing{ 0%,100%{transform:rotate(0);} 20%{transform:rotate(-14deg);} 40%{transform:rotate(11deg);} 60%{transform:rotate(-8deg);} 80%{transform:rotate(5deg);} }
+  @media (max-width:760px){ .reminder-container{ left:14px; right:14px; top:14px; max-width:none;} }
+  @media (hover: none){
+    .class-card .cc-del, .class-card .cc-edit{ opacity:1;}
+  }
+
+  /* ---- Animations ---- */
+  @keyframes fadeDown{ from{opacity:0; transform:translateY(-6px);} to{opacity:1; transform:translateY(0);} }
+  @keyframes navIn{ to{opacity:1; transform:translateX(0);} }
+  @keyframes pageIn{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+  @keyframes cardIn{ to{opacity:1; transform:translateY(0);} }
+  @keyframes dotPulse{ 0%,100%{opacity:1; box-shadow:0 0 0 0 rgba(45,212,191,0.5);} 50%{opacity:0.6; box-shadow:0 0 0 4px rgba(45,212,191,0);} }
+  @keyframes stampPress{ 0%{transform:scale(2.3) rotate(-18deg); opacity:0;} 55%{transform:scale(0.85) rotate(4deg); opacity:1;} 100%{transform:scale(1) rotate(0); opacity:1;} }
+  @keyframes pulseCell{ 0%{transform:scale(1);} 50%{transform:scale(1.16);} 100%{transform:scale(1);} }
+
+  /* ---- Responsive ---- */
+  @media (max-width:980px){
+    .stat-grid{ grid-template-columns:repeat(2,1fr);}
+    .grid-2{ grid-template-columns:1fr;}
+  }
+  @media (max-width:760px){
+    .app{ flex-direction:column;}
+    .sidebar{ width:100%; padding:14px 12px;}
+    .brand{ padding-bottom:14px; margin-bottom:8px;}
+    nav.nav{ flex-direction:row; overflow-x:auto; gap:4px; padding-bottom:4px;}
+    nav.nav button{ flex-direction:column; gap:4px; font-size:10.5px; padding:8px 10px; white-space:nowrap;}
+    nav.nav button .dot{ margin-left:0; position:absolute; top:6px; right:6px;}
+    .sidebar-bottom{ display:none;}
+    .page-header{ padding:20px 18px;}
+    .page-body{ padding:20px 18px 40px;}
+    .stat-grid{ grid-template-columns:1fr 1fr;}
+    .schedule-grid{ grid-template-columns:56px repeat(6,minmax(80px,1fr)); overflow-x:auto;}
+  }
+
+  button:focus-visible{ outline:2px solid var(--teal-500); outline-offset:2px;}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="mark">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 1 8l11 5 9-4.09V17h2V8L12 3Z"/><path d="M5 10.5V16c0 1.5 3 3 7 3s7-1.5 7-3v-5.5l-7 3.18-7-3.18Z"/></svg>
+      </div>
+      <div>
+        <h1>Jurnal</h1>
+        <p>O'qituvchi kabineti</p>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <button data-page="classes" class="active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5c2-1.3 6-1.3 8 0v13c-2-1.3-6-1.3-8 0V5Z"/><path d="M22 5c-2-1.3-6-1.3-8 0v13c2-1.3 6-1.3 8 0V5Z"/></svg>
+        <span>Sinflar</span><i class="dot"></i>
+      </button>
+      <button data-page="students">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17.5" cy="9" r="2.4"/><path d="M15.5 12.2c2.6.4 4.5 2.6 4.5 5.3"/></svg>
+        <span>O'quvchilar</span>
+      </button>
+      <button data-page="lessons">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+        <span>Darslar</span>
+      </button>
+      <button data-page="attendance">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9.5h18M8 3v3M16 3v3"/><path d="m8.5 14 2 2 4-4"/></svg>
+        <span>Davomat va baho</span>
+      </button>
+      <button data-page="schedule">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9.5h18M8 3v3M16 3v3M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01"/></svg>
+        <span>Dars jadvali</span>
+      </button>
+      <button data-page="statistics">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M12 20V4M20 20v-7"/></svg>
+        <span>Statistika</span>
+      </button>
+      <button data-page="settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 13.5a7.7 7.7 0 0 0 0-3l2-1.5-2-3.4-2.3.9a7.6 7.6 0 0 0-2.6-1.5L14 2.5h-4l-.5 2.5a7.6 7.6 0 0 0-2.6 1.5l-2.3-.9-2 3.4 2 1.5a7.7 7.7 0 0 0 0 3l-2 1.5 2 3.4 2.3-.9c.8.65 1.66 1.16 2.6 1.5l.5 2.5h4l.5-2.5a7.6 7.6 0 0 0 2.6-1.5l2.3.9 2-3.4-2-1.5Z"/></svg>
+        <span>Sozlamalar</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="label">Jami sinflar</div>
+      <div class="big-num" id="totalClasses">0</div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="page-header">
+      <h2 id="pageTitle">Sinflar</h2>
+      <button class="btn-primary" id="headerAction" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        <span id="headerActionLabel">Yangi</span>
+      </button>
+    </div>
+
+    <div class="page-body">
+
+      <!-- SINFLAR -->
+      <section class="page active" id="classes">
+        <div class="meta-row"><span id="classesCount">0 ta sinf ro'yxatga olingan</span></div>
+        <div class="class-grid" id="classGrid">
+          <div class="add-class-card" id="addClassCard">
+            <div class="row">
+              <input type="text" id="newClassName" placeholder="Sinf nomi, masalan 9-a">
+            </div>
+            <div class="row">
+              <input type="text" id="newClassSubject" placeholder="Fan, masalan biologiya">
+            </div>
+            <div class="row" style="justify-content:flex-end;">
+              <button class="btn-ghost" id="cancelClass">Bekor qilish</button>
+              <button class="btn-primary" id="saveClass" style="padding:9px 16px;">Qo'shish</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- O'QUVCHILAR -->
+      <section class="page" id="students">
+        <div class="class-filter" id="studentsFilter"></div>
+        <div class="lesson-form" id="studentForm">
+          <div class="field" style="flex:1;"><label>O'quvchi ismi va familyasi</label><input type="text" id="newStudentName" placeholder="Masalan: Aziza Karimova"></div>
+          <button class="btn-ghost" id="cancelStudent">Bekor qilish</button>
+          <button class="btn-primary" id="saveStudent" style="padding:9px 16px;">Qo'shish</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>O'quvchi</th><th>O'rtacha baho</th><th>Davomat</th><th>Holat</th><th>Amallar</th></tr></thead>
+            <tbody id="studentsBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- DARSLAR -->
+      <section class="page" id="lessons">
+        <div class="class-filter" id="lessonsFilter"></div>
+        <div class="lesson-form" id="lessonForm">
+          <div class="field"><label>Sana</label><input type="text" id="newLessonDate" placeholder="15.08"></div>
+          <div class="field"><label>Vaqt</label><input type="text" id="newLessonTime" placeholder="08:30"></div>
+          <div class="field" style="flex:1;"><label>Mavzu</label><input type="text" id="newLessonTopic" placeholder="Dars mavzusi"></div>
+          <button class="btn-ghost" id="cancelLesson">Bekor qilish</button>
+          <button class="btn-primary" id="saveLesson" style="padding:9px 16px;">Saqlash</button>
+        </div>
+        <div class="lesson-list2" id="lessonList2"></div>
+      </section>
+
+      <!-- DAVOMAT VA BAHO -->
+      <section class="page" id="attendance">
+        <div class="class-filter" id="attFilter"></div>
+        <div class="segmented">
+          <button data-seg="grades" class="active">Baholar</button>
+          <button data-seg="att">Davomat</button>
+        </div>
+
+        <div id="segGrades">
+          <div class="table-wrap" style="overflow-x:auto;">
+            <table>
+              <thead><tr id="journalHeadRow"><th>O'quvchi</th></tr></thead>
+              <tbody id="journalBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="segAtt" style="display:none;">
+          <div class="legend">
+            <span><i style="background:rgba(20,184,166,0.5);"></i>Bor</span>
+            <span><i style="background:rgba(227,146,46,0.5);"></i>Kechikdi</span>
+            <span><i style="background:rgba(220,91,79,0.5);"></i>Yo'q</span>
+          </div>
+          <div class="table-wrap" style="overflow-x:auto;">
+            <table>
+              <thead><tr id="attHeadRow"><th>O'quvchi</th></tr></thead>
+              <tbody id="attBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- DARS JADVALI -->
+      <section class="page" id="schedule">
+        <div class="class-filter" id="scheduleFilter"></div>
+        <div class="schedule-grid" id="scheduleGrid"></div>
+      </section>
+
+      <!-- STATISTIKA -->
+      <section class="page" id="statistics">
+        <div class="class-filter" id="statsFilter"></div>
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="icn" style="background:rgba(62,110,158,0.14);color:var(--blue);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17.5" cy="9" r="2.4"/><path d="M15.5 12.2c2.6.4 4.5 2.6 4.5 5.3"/></svg>
+            </div>
+            <div class="val" id="statStudents">0</div>
+            <div class="lbl">O'quvchilar soni</div>
+          </div>
+          <div class="stat-card">
+            <div class="icn" style="background:rgba(199,154,62,0.16);color:var(--gold);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2l2.6 6.2L21 9l-5 4.4L17.4 20 12 16.6 6.6 20 8 13.4 3 9l6.4-.8z"/></svg>
+            </div>
+            <div class="val" id="statAvg">0</div>
+            <div class="lbl">O'rtacha baho</div>
+          </div>
+          <div class="stat-card">
+            <div class="icn" style="background:rgba(20,184,166,0.16);color:var(--teal-600);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9.5h18"/><path d="m8.5 14 2 2 4-4"/></svg>
+            </div>
+            <div class="val" id="statAttendance">0</div>
+            <div class="lbl">Davomat darajasi</div>
+          </div>
+          <div class="stat-card">
+            <div class="icn" style="background:rgba(220,91,79,0.14);color:var(--red);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg>
+            </div>
+            <div class="val" id="statLessons">0</div>
+            <div class="lbl">Jami darslar</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <h3>Fanlar bo'yicha o'rtacha ko'rsatkich</h3>
+            <div id="subjectBars"></div>
+          </div>
+          <div class="panel">
+            <h3>Eng faol o'quvchilar</h3>
+            <ul class="top-list" id="topList"></ul>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:18px;">
+          <h3>Sinflar bo'yicha o'rtacha baho</h3>
+          <div class="chart-row" id="classChart"></div>
+        </div>
+      </section>
+
+      <!-- SOZLAMALAR -->
+      <section class="page" id="settings">
+        <div class="settings-card">
+          <div class="field">
+            <label>Ism va familya</label>
+            <input type="text" id="teacherName" value="Dilorom Yusupova">
+          </div>
+          <div class="field">
+            <label>Fan</label>
+            <input type="text" id="teacherSubject" value="Matematika o'qituvchisi">
+          </div>
+          <div class="toggle-row">
+            <div><div class="t-label">Bildirishnomalar</div><div class="t-sub">Dars boshlanishidan 5 daqiqa oldin eslatma olish</div></div>
+            <div class="switch on" id="toggleNotif"></div>
+          </div>
+          <div class="toggle-row">
+            <div><div class="t-label">Qorong'i mavzu</div><div class="t-sub">Tez orada qo'shiladi</div></div>
+            <div class="switch" id="toggleDark"></div>
+          </div>
+          <div style="margin-top:20px; display:flex; justify-content:space-between; align-items:center; gap:10px;">
+            <button class="btn-ghost" id="testReminder" type="button">Eslatmani sinab ko'rish</button>
+            <button class="btn-primary" id="saveSettings" style="padding:10px 20px;">Saqlash</button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast">Saqlandi</div>
+
+<div class="reminder-container" id="reminderContainer"></div>
+
+<div class="modal-overlay hidden" id="modalOverlay">
+  <div class="modal-box" id="modalBox">
+    <h3 id="modalTitle">Sarlavha</h3>
+    <p class="modal-msg hidden" id="modalMsg"></p>
+    <div id="modalFields"></div>
+    <div class="modal-actions">
+      <button class="btn-ghost" id="modalCancel">Bekor qilish</button>
+      <button class="btn-primary" id="modalConfirm">Saqlash</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  const SUBJECTS = ['Matematika','Ona tili','Tabiiy fanlar','Tarix'];
+  const NAME_POOL = ['Sardor Aliyev','Dilnoza Karimova','Jasur Yusupov','Madina Xolova','Aziz Rahimov','Nilufar Tosheva','Bekzod Nazarov','Sevinch Ergasheva','Otabek Qodirov','Zarina Yoldosheva','Farrux Isaqov','Gulnoza Saidova','Shavkat Umarov','Nigora Abdullayeva','Islom Mirzayev','Malika Yusupova'];
+  const WEEKDAYS = ['Dush','Sesh','Chor','Pay','Jum','Shan'];
+  const TIMES = ['08:30','09:20','10:10','11:00'];
+
+  let seed = 42;
+  function rnd(){ seed = (seed*9301+49297) % 233280; return seed/233280; }
+  function pick(arr){ return arr[Math.floor(rnd()*arr.length)]; }
+  function genScores(){
+    const n = 3 + Math.floor(rnd()*3);
+    const pool = [5,5,4,4,4,3,3,2];
+    const out = [];
+    for(let i=0;i<n;i++) out.push(pick(pool));
+    return out;
+  }
+  function initials(name){ return name.split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase(); }
+  function avg(arr){ if(!arr||!arr.length) return 0; return arr.reduce((a,b)=>a+b,0)/arr.length; }
+  function gradeClass(s){ if(s>=4.5) return 'g5'; if(s>=3.5) return 'g4'; if(s>=2.5) return 'g3'; return 'g2'; }
+  function badgeStyle(score){
+    let bg,fg;
+    if(score>=4.5){bg='rgba(199,154,62,0.15)';fg='var(--gold)';}
+    else if(score>=3.5){bg='rgba(13,148,136,0.13)';fg='var(--teal-600)';}
+    else if(score>=2.5){bg='rgba(227,146,46,0.15)';fg='var(--amber)';}
+    else {bg='rgba(220,91,79,0.14)';fg='var(--red)';}
+    return `background:${bg};color:${fg};`;
+  }
+
+  function makeClass(name, subject, note, withDemoData){
+    const students = {};
+    if(withDemoData){
+      let names = [];
+      const n = 6 + Math.floor(rnd()*3);
+      for(let i=0;i<n;i++) names.push(pick(NAME_POOL) + (rnd()>0.7 ? ' ' : ''));
+      names = Array.from(new Set(names)).slice(0,6);
+      if(names.length < 4){ names = NAME_POOL.slice(0,6); }
+      names.forEach(nm=>{
+        const grades = {};
+        SUBJECTS.forEach(s=> grades[s] = genScores());
+        const attendance = SCHOOL_DAYS.map(()=> pick(['bor','bor','bor','bor','kech','yoq']));
+        students[nm] = { grades, attendance };
+      });
+    }
+    const lessons = withDemoData ? [
+      {date:'12.08', time:'08:30', topic:'Kirish mavzu'},
+      {date:'13.08', time:'09:20', topic:'Mustahkamlash'},
+      {date:'14.08', time:'10:10', topic:note || 'Amaliy mashg\'ulot'}
+    ] : [];
+    const defaultTimes = withDemoData ? TIMES : ['08:30'];
+    const schedule = defaultTimes.map((t,ti)=> ({
+      time: t,
+      cells: WEEKDAYS.map((d,di)=> withDemoData && (ti+di)%3 !== 2 ? SUBJECTS[(ti+di)%SUBJECTS.length] : '')
+    }));
+    return { name, subject, note: note || '', students, lessons, schedule };
+  }
+
+  function addStudent(cls, name){
+    const grades = {};
+    SUBJECTS.forEach(s=> grades[s] = []);
+    const attendance = SCHOOL_DAYS.map(()=> 'bor');
+    cls.students[name] = { grades, attendance };
+  }
+
+  function last6SchoolDays(){
+    const days = [];
+    let d = new Date();
+    while(days.length < 6){
+      if(d.getDay() !== 0){ days.unshift(new Date(d)); }
+      d.setDate(d.getDate()-1);
+    }
+    return days;
+  }
+  const SCHOOL_DAYS = last6SchoolDays();
+
+  let CLASSES = [
+    makeClass('5-A','Matematika','musobaqa oyini', true),
+    makeClass('6-B',"Ona tili","darsni oxirida savol-javob", true),
+    makeClass('7-A','Tabiiy fanlar','kimyo', true)
+  ];
+
+  const state = { cls: CLASSES[0].name, page:'classes', segment:'grades' };
+
+  function getClass(name){ return CLASSES.find(c=>c.name===name); }
+
+  // ---------------- NAV ----------------
+  const navButtons = document.querySelectorAll('nav.nav button');
+  const TITLES = {
+    classes: ['Sinflar', null],
+    students: ["O'quvchilar", null],
+    lessons: ['Darslar', null],
+    attendance: ['Davomat va baho', null],
+    schedule: ['Dars jadvali', null],
+    statistics: ['Statistika', null],
+    settings: ['Sozlamalar', null]
+  };
+  const HEADER_ACTIONS = {
+    classes: 'Yangi sinf',
+    students: "O'quvchi qo'shish",
+    lessons: 'Yangi dars'
+  };
+
+  navButtons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      state.page = btn.dataset.page;
+      navButtons.forEach(b=>{
+        b.classList.toggle('active', b===btn);
+        b.querySelector('.dot')?.remove();
+      });
+      const d = document.createElement('i'); d.className='dot';
+      btn.appendChild(d);
+      renderPage();
+    });
+  });
+
+  const headerAction = document.getElementById('headerAction');
+  const headerActionLabel = document.getElementById('headerActionLabel');
+  headerAction.addEventListener('click', ()=>{
+    if(state.page==='classes'){
+      document.getElementById('addClassCard').classList.add('open');
+      document.getElementById('newClassName').focus();
+    } else if(state.page==='lessons'){
+      document.getElementById('lessonForm').classList.add('open');
+      document.getElementById('newLessonTopic').focus();
+    } else if(state.page==='students'){
+      document.getElementById('studentForm').classList.add('open');
+      document.getElementById('newStudentName').focus();
+    }
+  });
+
+  function renderPage(){
+    document.querySelectorAll('.page').forEach(p=> p.classList.toggle('active', p.id===state.page));
+    const active = document.getElementById(state.page);
+    active.style.animation='none'; void active.offsetWidth; active.style.animation='';
+
+    document.getElementById('pageTitle').textContent = TITLES[state.page][0];
+    if(HEADER_ACTIONS[state.page]){
+      headerAction.style.display='inline-flex';
+      headerActionLabel.textContent = HEADER_ACTIONS[state.page];
+    } else {
+      headerAction.style.display='none';
+    }
+
+    if(state.page==='classes') renderClasses();
+    if(state.page==='students') renderStudents();
+    if(state.page==='lessons') renderLessons();
+    if(state.page==='attendance') renderAttendance();
+    if(state.page==='schedule') renderSchedule();
+    if(state.page==='statistics') renderStatistics();
+  }
+
+  function renderClassFilter(container, onPick){
+    container.innerHTML='';
+    CLASSES.forEach(c=>{
+      const b = document.createElement('button');
+      b.textContent = c.name;
+      if(c.name===state.cls) b.classList.add('active');
+      b.addEventListener('click', ()=>{
+        state.cls = c.name;
+        container.querySelectorAll('button').forEach(x=>x.classList.toggle('active', x===b));
+        onPick();
+      });
+      container.appendChild(b);
+    });
+  }
+
+  // ---------------- SINFLAR ----------------
+  function renderClasses(){
+    document.getElementById('classesCount').textContent = `${CLASSES.length} ta sinf ro'yxatga olingan`;
+    document.getElementById('totalClasses').textContent = CLASSES.length;
+    const grid = document.getElementById('classGrid');
+    grid.querySelectorAll('.class-card').forEach(el=>el.remove());
+    const addCard = document.getElementById('addClassCard');
+    CLASSES.forEach((c,i)=>{
+      const card = document.createElement('div');
+      card.className='class-card';
+      card.style.animationDelay = (i*0.05)+'s';
+      const studentCount = Object.keys(c.students).length;
+      card.innerHTML = `
+        <button class="icon-del cc-del" type="button" title="O'chirish">✕</button>
+        <button class="icon-del cc-edit" type="button" title="Tahrirlash" style="right:38px;">✎</button>
+        <div class="cc-body" style="cursor:pointer;">
+          <div class="cc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5c2-1.3 6-1.3 8 0v13c-2-1.3-6-1.3-8 0V5Z"/><path d="M22 5c-2-1.3-6-1.3-8 0v13c2-1.3 6-1.3 8 0V5Z"/></svg></div>
+          <h3>${c.name}</h3>
+          <div class="cc-subject">${c.subject}</div>
+          <div class="cc-note">${c.note || (studentCount ? studentCount+' ta o\'quvchi' : "Hali o'quvchi qo'shilmagan")}</div>
+        </div>
+        <div class="cc-edit-form" style="display:none; flex-direction:column; gap:8px;">
+          <input type="text" class="ec-name" value="${c.name}" style="all:unset;box-sizing:border-box;width:100%;padding:8px 10px;border-radius:8px;border:1px solid var(--border);font-size:13.5px;">
+          <input type="text" class="ec-subject" value="${c.subject}" style="all:unset;box-sizing:border-box;width:100%;padding:8px 10px;border-radius:8px;border:1px solid var(--border);font-size:13.5px;">
+          <div style="display:flex; gap:8px; justify-content:flex-end;">
+            <button class="btn-ghost ec-cancel" type="button" style="padding:7px 12px;">Bekor</button>
+            <button class="btn-primary ec-save" type="button" style="padding:7px 14px;">Saqlash</button>
+          </div>
+        </div>`;
+      card.querySelector('.cc-body').addEventListener('click', ()=>{
+        state.cls = c.name;
+        navButtons.forEach(b=>{
+          const isTarget = b.dataset.page==='students';
+          b.classList.toggle('active', isTarget);
+          b.querySelector('.dot')?.remove();
+          if(isTarget){ const d=document.createElement('i'); d.className='dot'; b.appendChild(d); }
+        });
+        state.page='students';
+        renderPage();
+      });
+      card.querySelector('.cc-del').addEventListener('click', async (e)=>{
+        e.stopPropagation();
+        if(CLASSES.length<=1){ showToast('Kamida bitta sinf qolishi kerak'); return; }
+        const ok = await confirmDelete("Sinfni o'chirish", `"${c.name}" sinfini o'chirmoqchimisiz? Barcha ma'lumotlar (o'quvchilar, baholar, darslar) yo'qoladi.`);
+        if(!ok) return;
+        CLASSES = CLASSES.filter(x=>x!==c);
+        if(state.cls===c.name) state.cls = CLASSES[0].name;
+        renderClasses();
+        showToast("Sinf o'chirildi");
+      });
+      card.querySelector('.cc-edit').addEventListener('click', (e)=>{
+        e.stopPropagation();
+        card.querySelector('.cc-body').style.display='none';
+        card.querySelector('.cc-edit-form').style.display='flex';
+      });
+      card.querySelector('.ec-cancel').addEventListener('click', (e)=>{
+        e.stopPropagation();
+        card.querySelector('.cc-edit-form').style.display='none';
+        card.querySelector('.cc-body').style.display='';
+      });
+      card.querySelector('.ec-save').addEventListener('click', (e)=>{
+        e.stopPropagation();
+        const newName = card.querySelector('.ec-name').value.trim();
+        const newSubject = card.querySelector('.ec-subject').value.trim();
+        if(!newName) return;
+        if(state.cls===c.name) state.cls = newName;
+        c.name = newName; c.subject = newSubject || c.subject;
+        renderClasses();
+        showToast('Sinf yangilandi');
+      });
+      grid.insertBefore(card, addCard);
+    });
+  }
+
+  document.getElementById('cancelClass').addEventListener('click', ()=>{
+    document.getElementById('addClassCard').classList.remove('open');
+    document.getElementById('newClassName').value='';
+    document.getElementById('newClassSubject').value='';
+  });
+  document.getElementById('saveClass').addEventListener('click', ()=>{
+    const name = document.getElementById('newClassName').value.trim();
+    const subject = document.getElementById('newClassSubject').value.trim();
+    if(!name){ document.getElementById('newClassName').focus(); return; }
+    const c = makeClass(name, subject || 'Fan belgilanmagan', '', false);
+    CLASSES.push(c);
+    document.getElementById('newClassName').value='';
+    document.getElementById('newClassSubject').value='';
+    document.getElementById('addClassCard').classList.remove('open');
+    renderClasses();
+    showToast("Sinf qo'shildi");
+  });
+
+  document.getElementById('cancelStudent').addEventListener('click', ()=>{
+    document.getElementById('studentForm').classList.remove('open');
+    document.getElementById('newStudentName').value='';
+  });
+  document.getElementById('saveStudent').addEventListener('click', ()=>{
+    const name = document.getElementById('newStudentName').value.trim();
+    if(!name){ document.getElementById('newStudentName').focus(); return; }
+    const cls = getClass(state.cls);
+    if(cls.students[name]){ showToast('Bu o\'quvchi allaqachon mavjud'); return; }
+    addStudent(cls, name);
+    document.getElementById('newStudentName').value='';
+    document.getElementById('studentForm').classList.remove('open');
+    renderStudents();
+    showToast("O'quvchi qo'shildi");
+  });
+
+  // ---------------- O'QUVCHILAR ----------------
+  function renderStudents(){
+    renderClassFilter(document.getElementById('studentsFilter'), renderStudents);
+    const cls = getClass(state.cls);
+    const body = document.getElementById('studentsBody');
+    body.innerHTML='';
+    const names = Object.keys(cls.students);
+    if(!names.length){
+      body.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:40px 18px; color:var(--ink-400);">${cls.name} sinfida hali o'quvchi yo'q. Yuqoridagi "O'quvchi qo'shish" tugmasini bosing.</td></tr>`;
+      return;
+    }
+    names.forEach(name=>{
+      const st = cls.students[name];
+      let all=[]; SUBJECTS.forEach(s=> all = all.concat(st.grades[s]));
+      const a = avg(all);
+      const attRate = Math.round((st.attendance.filter(x=>x==='bor').length/st.attendance.length)*100);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><div class="stu"><span class="stu-av">${initials(name)}</span>${name}</div></td>
+        <td><span class="badge" style="${badgeStyle(a)}">${a.toFixed(1)}</span></td>
+        <td>${attRate}%</td>
+        <td>${a>=4 ? "A'lo" : a>=3 ? 'Yaxshi' : "Qo'shimcha e'tibor"}</td>
+        <td><div style="display:flex; gap:4px;">
+          <button class="icon-del stu-rename" type="button" title="Nomini o'zgartirish" style="position:static;">✎</button>
+          <button class="icon-del stu-del" type="button" title="O'chirish" style="position:static;">✕</button>
+        </div></td>`;
+      tr.querySelector('.stu-rename').addEventListener('click', async ()=>{
+        const result = await openModal({title:"O'quvchi ismini tahrirlash", fields:[{id:'name', label:'Ism va familya', value:name}], confirmLabel:'Saqlash'});
+        if(!result || !result.name || result.name===name) return;
+        if(cls.students[result.name]){ showToast('Bu ism band'); return; }
+        cls.students[result.name] = cls.students[name];
+        delete cls.students[name];
+        renderStudents();
+        showToast('Yangilandi');
+      });
+      tr.querySelector('.stu-del').addEventListener('click', async ()=>{
+        const ok = await confirmDelete("O'quvchini o'chirish", `${name}ni "${cls.name}" sinfidan o'chirmoqchimisiz? Uning barcha baho va davomat ma'lumotlari yo'qoladi.`);
+        if(!ok) return;
+        delete cls.students[name];
+        renderStudents();
+        showToast("O'quvchi o'chirildi");
+      });
+      body.appendChild(tr);
+    });
+  }
+
+  // ---------------- DARSLAR ----------------
+  document.getElementById('cancelLesson').addEventListener('click', ()=>{
+    document.getElementById('lessonForm').classList.remove('open');
+  });
+  document.getElementById('saveLesson').addEventListener('click', ()=>{
+    const date = document.getElementById('newLessonDate').value.trim();
+    const time = document.getElementById('newLessonTime').value.trim();
+    const topic = document.getElementById('newLessonTopic').value.trim();
+    if(!topic) { document.getElementById('newLessonTopic').focus(); return; }
+    getClass(state.cls).lessons.push({date: date || '—', time: time || '', topic});
+    document.getElementById('newLessonDate').value='';
+    document.getElementById('newLessonTime').value='';
+    document.getElementById('newLessonTopic').value='';
+    document.getElementById('lessonForm').classList.remove('open');
+    renderLessons();
+    showToast('Dars qo\'shildi');
+  });
+
+  function renderLessons(){
+    renderClassFilter(document.getElementById('lessonsFilter'), renderLessons);
+    const cls = getClass(state.cls);
+    const list = document.getElementById('lessonList2');
+    list.innerHTML='';
+    if(!cls.lessons.length){
+      list.innerHTML = `<div style="text-align:center; padding:40px 18px; color:var(--ink-400);">${cls.name} sinfida hali dars qo'shilmagan.</div>`;
+      return;
+    }
+    const realIndices = cls.lessons.map((_,i)=>i).reverse();
+    cls.lessons.slice().reverse().forEach((l,i)=>{
+      const realIdx = realIndices[i];
+      const el = document.createElement('div');
+      el.className='lesson-card';
+      el.style.animationDelay=(i*0.04)+'s';
+      el.innerHTML = `<span class="lesson-date">${l.date}${l.time ? ' · '+l.time : ''}</span><span class="lesson-topic">${l.topic}</span><span class="lesson-class">${cls.name} · ${cls.subject}</span>
+        <button class="icon-del les-edit" type="button" title="Tahrirlash">✎</button>
+        <button class="icon-del les-del" type="button" title="O'chirish">✕</button>`;
+      el.querySelector('.les-edit').addEventListener('click', async ()=>{
+        const result = await openModal({
+          title: 'Darsni tahrirlash',
+          fields: [
+            {id:'topic', label:'Mavzu', value:l.topic},
+            {id:'date', label:'Sana', value:l.date},
+            {id:'time', label:'Vaqt', value:l.time||''}
+          ],
+          confirmLabel:'Saqlash'
+        });
+        if(!result || !result.topic) return;
+        cls.lessons[realIdx].topic = result.topic;
+        cls.lessons[realIdx].date = result.date || '—';
+        cls.lessons[realIdx].time = result.time || '';
+        renderLessons();
+        showToast('Dars yangilandi');
+      });
+      el.querySelector('.les-del').addEventListener('click', async ()=>{
+        const ok = await confirmDelete('Darsni o\'chirish', `"${l.topic}" darsini o'chirmoqchimisiz?`);
+        if(!ok) return;
+        cls.lessons.splice(realIdx,1);
+        renderLessons();
+        showToast("Dars o'chirildi");
+      });
+      list.appendChild(el);
+    });
+  }
+
+  // ---------------- DAVOMAT VA BAHO ----------------
+  document.querySelectorAll('.segmented button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      state.segment = btn.dataset.seg;
+      document.querySelectorAll('.segmented button').forEach(b=>b.classList.toggle('active', b===btn));
+      document.getElementById('segGrades').style.display = state.segment==='grades' ? '' : 'none';
+      document.getElementById('segAtt').style.display = state.segment==='att' ? '' : 'none';
+    });
+  });
+
+  function renderAttendance(){
+    renderClassFilter(document.getElementById('attFilter'), renderAttendance);
+    renderJournal();
+    renderAttTable();
+  }
+
+  function renderJournal(){
+    const cls = getClass(state.cls);
+    const headRow = document.getElementById('journalHeadRow');
+    headRow.innerHTML = "<th>O'quvchi</th>" + SUBJECTS.map(s=>`<th>${s}</th>`).join('');
+    const body = document.getElementById('journalBody');
+    body.innerHTML='';
+    const jnames = Object.keys(cls.students);
+    if(!jnames.length){
+      body.innerHTML = `<tr><td colspan="${SUBJECTS.length+1}" style="text-align:center; padding:40px 18px; color:var(--ink-400);">${cls.name} sinfida hali o'quvchi yo'q.</td></tr>`;
+      return;
+    }
+    jnames.forEach(name=>{
+      const tr = document.createElement('tr');
+      let html = `<td><div class="stu"><span class="stu-av">${initials(name)}</span>${name}</div></td>`;
+      SUBJECTS.forEach(sub=>{
+        html += `<td class="j-cell" data-student="${name}" data-subject="${sub}">
+          <div class="stamps"></div>
+          <button class="add-btn" type="button">+</button>
+          <div class="picker hidden">
+            <button data-score="5" type="button">5</button>
+            <button data-score="4" type="button">4</button>
+            <button data-score="3" type="button">3</button>
+            <button data-score="2" type="button">2</button>
+          </div>
+          <div class="edit-menu hidden" data-index="">
+            <button data-score="5" type="button">5</button>
+            <button data-score="4" type="button">4</button>
+            <button data-score="3" type="button">3</button>
+            <button data-score="2" type="button">2</button>
+            <button class="del-btn" data-action="delete" type="button">✕</button>
+          </div></td>`;
+      });
+      tr.innerHTML = html;
+      body.appendChild(tr);
+    });
+    body.querySelectorAll('.j-cell').forEach(cell=> fillStamps(cell,false));
+    body.querySelectorAll('.add-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        btn.closest('.j-cell').querySelector('.edit-menu').classList.add('hidden');
+        btn.nextElementSibling.classList.toggle('hidden');
+      });
+    });
+    body.querySelectorAll('.picker button').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const cell = btn.closest('.j-cell');
+        const student = cell.dataset.student, subject = cell.dataset.subject;
+        const score = parseInt(btn.dataset.score,10);
+        getClass(state.cls).students[student].grades[subject].push(score);
+        fillStamps(cell,true);
+        cell.querySelector('.picker').classList.add('hidden');
+      });
+    });
+    body.querySelectorAll('.edit-menu button').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const cell = btn.closest('.j-cell');
+        const menu = cell.querySelector('.edit-menu');
+        const student = cell.dataset.student, subject = cell.dataset.subject;
+        const idx = parseInt(menu.dataset.index,10);
+        const arr = getClass(state.cls).students[student].grades[subject];
+        if(btn.dataset.action==='delete'){
+          arr.splice(idx,1);
+        } else {
+          arr[idx] = parseInt(btn.dataset.score,10);
+        }
+        menu.classList.add('hidden');
+        fillStamps(cell,false);
+      });
+    });
+  }
+  function fillStamps(cell, animateLast){
+    const student = cell.dataset.student, subject = cell.dataset.subject;
+    const scores = getClass(state.cls).students[student].grades[subject];
+    const wrap = cell.querySelector('.stamps');
+    wrap.innerHTML='';
+    const shown = scores.slice(-5);
+    const startIndex = scores.length - shown.length;
+    shown.forEach((s,i)=>{
+      const span = document.createElement('span');
+      span.className = 'stamp ' + gradeClass(s);
+      span.textContent = s;
+      span.dataset.index = startIndex + i;
+      if(animateLast && i===shown.length-1) span.classList.add('stamp-in');
+      span.addEventListener('click', ()=>{
+        cell.querySelector('.picker').classList.add('hidden');
+        const menu = cell.querySelector('.edit-menu');
+        const opening = menu.classList.contains('hidden');
+        menu.dataset.index = span.dataset.index;
+        menu.classList.toggle('hidden', !opening);
+      });
+      wrap.appendChild(span);
+    });
+  }
+
+  const STATUS_CYCLE = ['bor','kech','yoq'];
+  const STATUS_SYMBOL = {bor:'✓', kech:'●', yoq:'✕'};
+  function renderAttTable(){
+    const cls = getClass(state.cls);
+    const headRow = document.getElementById('attHeadRow');
+    headRow.innerHTML = "<th>O'quvchi</th>" + SCHOOL_DAYS.map(d=>`<th>${WEEKDAYS[d.getDay()-1]}<br><span style="font-weight:400;">${d.getDate()}</span></th>`).join('');
+    const body = document.getElementById('attBody');
+    body.innerHTML='';
+    const anames = Object.keys(cls.students);
+    if(!anames.length){
+      body.innerHTML = `<tr><td colspan="${SCHOOL_DAYS.length+1}" style="text-align:center; padding:40px 18px; color:var(--ink-400);">${cls.name} sinfida hali o'quvchi yo'q.</td></tr>`;
+      return;
+    }
+    anames.forEach(name=>{
+      const st = cls.students[name];
+      const tr = document.createElement('tr');
+      let html = `<td><div class="stu"><span class="stu-av">${initials(name)}</span>${name}</div></td>`;
+      st.attendance.forEach((status,idx)=>{
+        html += `<td><button class="att-cell ${status}" data-student="${name}" data-day="${idx}">${STATUS_SYMBOL[status]}</button></td>`;
+      });
+      tr.innerHTML = html;
+      body.appendChild(tr);
+    });
+    body.querySelectorAll('.att-cell').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const student = btn.dataset.student, day = parseInt(btn.dataset.day,10);
+        const cur = getClass(state.cls).students[student].attendance[day];
+        const next = STATUS_CYCLE[(STATUS_CYCLE.indexOf(cur)+1)%STATUS_CYCLE.length];
+        getClass(state.cls).students[student].attendance[day] = next;
+        btn.className = 'att-cell ' + next + ' pulse';
+        btn.textContent = STATUS_SYMBOL[next];
+        setTimeout(()=>btn.classList.remove('pulse'),350);
+      });
+    });
+  }
+
+  // ---------------- DARS JADVALI ----------------
+  function renderSchedule(){
+    renderClassFilter(document.getElementById('scheduleFilter'), renderSchedule);
+    const cls = getClass(state.cls);
+    const grid = document.getElementById('scheduleGrid');
+    grid.innerHTML = '<div></div>' + WEEKDAYS.map(d=>`<div class="sh-head">${d}</div>`).join('');
+    cls.schedule.forEach((row, ti)=>{
+      const timeWrap = document.createElement('div');
+      timeWrap.className='sh-time-wrap';
+      timeWrap.innerHTML = `
+        <button type="button" class="sh-time-btn">${row.time}</button>
+        <button type="button" class="sh-time-del" title="Qatorni o'chirish">✕</button>`;
+      timeWrap.querySelector('.sh-time-btn').addEventListener('click', async ()=>{
+        const result = await openModal({title:'Vaqtni tahrirlash', fields:[{id:'time', label:'Vaqt', value:row.time, placeholder:'09:00'}], confirmLabel:'Saqlash'});
+        if(!result || !result.time) return;
+        row.time = result.time;
+        renderSchedule();
+      });
+      timeWrap.querySelector('.sh-time-del').addEventListener('click', async ()=>{
+        if(cls.schedule.length<=1){ showToast('Kamida bitta vaqt qolishi kerak'); return; }
+        const ok = await confirmDelete('Vaqtni o\'chirish', `${row.time} vaqtini jadvaldan o'chirmoqchimisiz?`);
+        if(!ok) return;
+        cls.schedule.splice(ti,1);
+        renderSchedule();
+      });
+      grid.appendChild(timeWrap);
+
+      WEEKDAYS.forEach((d,di)=>{
+        const subj = row.cells[di];
+        const wrap = document.createElement('div');
+        wrap.className = 'sh-wrap';
+        const pickerOptions = SUBJECTS.map(s=>`<button type="button" data-subj="${s}">${s}</button>`).join('');
+        wrap.innerHTML = `
+          <button type="button" class="sh-cell ${subj ? 'filled':'empty'}">${subj || '—'}</button>
+          <div class="sh-picker hidden">
+            ${pickerOptions}
+            <button type="button" class="clear-opt" data-subj="">Bo'sh qilish</button>
+          </div>`;
+        const cellBtn = wrap.querySelector('.sh-cell');
+        const picker = wrap.querySelector('.sh-picker');
+        cellBtn.addEventListener('click', ()=>{
+          document.querySelectorAll('.sh-picker').forEach(p=>{ if(p!==picker) p.classList.add('hidden'); });
+          picker.classList.toggle('hidden');
+        });
+        picker.querySelectorAll('button').forEach(btn=>{
+          btn.addEventListener('click', ()=>{
+            row.cells[di] = btn.dataset.subj;
+            picker.classList.add('hidden');
+            renderSchedule();
+          });
+        });
+        grid.appendChild(wrap);
+      });
+    });
+
+    const addRowWrap = document.createElement('div');
+    addRowWrap.style.gridColumn = '1 / -1';
+    addRowWrap.style.marginTop = '4px';
+    addRowWrap.innerHTML = `<button type="button" class="btn-ghost" id="addScheduleRow">+ Vaqt qo'shish</button>`;
+    grid.appendChild(addRowWrap);
+    document.getElementById('addScheduleRow').addEventListener('click', async ()=>{
+      const result = await openModal({title:'Yangi vaqt qo\'shish', fields:[{id:'time', label:'Vaqt', value:'12:00', placeholder:'12:00'}], confirmLabel:"Qo'shish"});
+      if(!result || !result.time) return;
+      cls.schedule.push({ time:result.time, cells: WEEKDAYS.map(()=>'') });
+      renderSchedule();
+    });
+  }
+  document.addEventListener('click', (e)=>{
+    if(!e.target.closest('.sh-wrap')){
+      document.querySelectorAll('.sh-picker').forEach(p=>p.classList.add('hidden'));
+    }
+  });
+
+  // ---------------- STATISTIKA ----------------
+  function animateCount(el, target, opts){
+    opts = opts || {};
+    const decimals = opts.decimal ? 1 : 0;
+    const suffix = opts.suffix || '';
+    const dur = 800;
+    const start = performance.now();
+    function tick(now){
+      const t = Math.min(1,(now-start)/dur);
+      const eased = 1-Math.pow(1-t,3);
+      el.textContent = (target*eased).toFixed(decimals)+suffix;
+      if(t<1) requestAnimationFrame(tick); else el.textContent = target.toFixed(decimals)+suffix;
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function renderStatistics(){
+    renderClassFilter(document.getElementById('statsFilter'), renderStatistics);
+    const cls = getClass(state.cls);
+    const students = Object.keys(cls.students);
+    let allScores=[]; let attTotal=0, attGood=0;
+    const subjTotals={}; SUBJECTS.forEach(s=>subjTotals[s]=[]);
+    students.forEach(name=>{
+      const st = cls.students[name];
+      SUBJECTS.forEach(sub=>{ allScores=allScores.concat(st.grades[sub]); subjTotals[sub]=subjTotals[sub].concat(st.grades[sub]); });
+      st.attendance.forEach(a=>{ attTotal++; if(a==='bor') attGood++; });
+    });
+    animateCount(document.getElementById('statStudents'), students.length);
+    animateCount(document.getElementById('statAvg'), avg(allScores), {decimal:true});
+    animateCount(document.getElementById('statAttendance'), attTotal? Math.round((attGood/attTotal)*100):0, {suffix:'%'});
+    animateCount(document.getElementById('statLessons'), cls.lessons.length);
+
+    const barsEl = document.getElementById('subjectBars');
+    barsEl.innerHTML='';
+    SUBJECTS.forEach(sub=>{
+      const a = avg(subjTotals[sub]);
+      const row = document.createElement('div'); row.className='bar-row';
+      row.innerHTML = `<div class="bar-top"><span>${sub}</span><span style="font-family:'IBM Plex Mono',monospace;">${a.toFixed(1)}</span></div><div class="bar-track"><div class="bar-fill"></div></div>`;
+      barsEl.appendChild(row);
+      const fill = row.querySelector('.bar-fill');
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{ fill.style.width=(a/5*100)+'%'; }));
+    });
+
+    const ranked = students.map(name=>{
+      let all=[]; SUBJECTS.forEach(s=>all=all.concat(cls.students[name].grades[s]));
+      return {name, a:avg(all)};
+    }).sort((a,b)=>b.a-a.a).slice(0,5);
+    document.getElementById('topList').innerHTML = ranked.map((r,i)=>`
+      <li><span class="rank ${i===0?'r1':i===1?'r2':i===2?'r3':''}">${i+1}</span><span class="name">${r.name}</span><span class="score">${r.a.toFixed(1)}</span></li>`).join('');
+
+    const chartEl = document.getElementById('classChart');
+    chartEl.innerHTML='';
+    CLASSES.forEach(c=>{
+      let all=[]; Object.values(c.students).forEach(st=> SUBJECTS.forEach(s=> all=all.concat(st.grades[s])));
+      const a = avg(all);
+      const col = document.createElement('div'); col.className='chart-col';
+      col.innerHTML = `<div class="chart-bar"><span class="chart-val">${a.toFixed(1)}</span></div><div class="chart-lbl">${c.name}</div>`;
+      chartEl.appendChild(col);
+      const bar = col.querySelector('.chart-bar');
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{ bar.style.height=(a/5*100)+'%'; }));
+    });
+  }
+
+  // ---------------- SOZLAMALAR ----------------
+  document.getElementById('toggleNotif').addEventListener('click', function(){
+    const turningOn = !this.classList.contains('on');
+    this.classList.toggle('on');
+    if(turningOn && 'Notification' in window && Notification.permission==='default'){
+      Notification.requestPermission().then(perm=>{
+        if(perm==='granted') showToast('Bildirishnomalarga ruxsat berildi');
+        else if(perm==='denied') showToast('Bildirishnoma ruxsati rad etildi — brauzer sozlamalaridan yoqing');
+      });
+    }
+  });
+  document.getElementById('toggleDark').addEventListener('click', function(){ /* tez orada */ });
+  document.getElementById('saveSettings').addEventListener('click', ()=> showToast('Sozlamalar saqlandi'));
+  document.getElementById('testReminder').addEventListener('click', ()=>{
+    const c = CLASSES[0];
+    showReminder(c.name, c.subject, 'hozir');
+  });
+
+  let toastTimer;
+  function showToast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=> t.classList.remove('show'), 2200);
+  }
+
+  // ---------------- MODAL (replaces native confirm/prompt) ----------------
+  function openModal({title, message, fields=[], confirmLabel='Saqlash', danger=false}){
+    return new Promise(resolve=>{
+      const overlay = document.getElementById('modalOverlay');
+      document.getElementById('modalTitle').textContent = title;
+      const msgEl = document.getElementById('modalMsg');
+      if(message){ msgEl.textContent = message; msgEl.classList.remove('hidden'); }
+      else { msgEl.classList.add('hidden'); }
+
+      const fieldsWrap = document.getElementById('modalFields');
+      fieldsWrap.innerHTML = '';
+      fields.forEach(f=>{
+        const div = document.createElement('div');
+        div.className='field';
+        div.innerHTML = `<label>${f.label}</label><input type="text" id="mf_${f.id}" value="${(f.value||'').replace(/"/g,'&quot;')}" placeholder="${f.placeholder||''}">`;
+        fieldsWrap.appendChild(div);
+      });
+
+      const confirmBtn = document.getElementById('modalConfirm');
+      const cancelBtn = document.getElementById('modalCancel');
+      confirmBtn.textContent = confirmLabel;
+      confirmBtn.classList.toggle('danger', !!danger);
+      overlay.classList.remove('hidden');
+      if(fields.length){ setTimeout(()=> document.getElementById('mf_'+fields[0].id)?.focus(), 60); }
+      else { setTimeout(()=> confirmBtn.focus(), 60); }
+
+      function cleanup(result){
+        overlay.classList.add('hidden');
+        confirmBtn.removeEventListener('click', onConfirmClick);
+        cancelBtn.removeEventListener('click', onCancelClick);
+        overlay.removeEventListener('click', onOverlayClick);
+        document.removeEventListener('keydown', onKeydown);
+        resolve(result);
+      }
+      function onConfirmClick(){
+        const values = {};
+        fields.forEach(f=> values[f.id] = document.getElementById('mf_'+f.id).value.trim());
+        cleanup(values);
+      }
+      function onCancelClick(){ cleanup(null); }
+      function onOverlayClick(e){ if(e.target===overlay) cleanup(null); }
+      function onKeydown(e){
+        if(e.key==='Escape') cleanup(null);
+        if(e.key==='Enter' && fields.length<=1) onConfirmClick();
+      }
+      confirmBtn.addEventListener('click', onConfirmClick);
+      cancelBtn.addEventListener('click', onCancelClick);
+      overlay.addEventListener('click', onOverlayClick);
+      document.addEventListener('keydown', onKeydown);
+    });
+  }
+  function confirmDelete(title, message){
+    return openModal({title, message, fields:[], confirmLabel:"Ha, o'chirish", danger:true}).then(r=> r!==null);
+  }
+
+  // ---------------- 5-DAQIQALIK ESLATMA ----------------
+  const notifiedKeys = new Set();
+  function notificationsOn(){
+    const t = document.getElementById('toggleNotif');
+    return t ? t.classList.contains('on') : true;
+  }
+  function showReminder(className, subject, time){
+    const container = document.getElementById('reminderContainer');
+    const card = document.createElement('div');
+    card.className = 'reminder-card';
+    card.innerHTML = `
+      <div class="r-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></div>
+      <div class="r-body">
+        <div class="r-title">${className} · ${subject}</div>
+        <div class="r-sub">Dars ${time} da boshlanadi — 5 daqiqa qoldi!</div>
+      </div>
+      <button class="r-close" type="button">✕</button>`;
+    function remove(){
+      card.classList.add('leaving');
+      setTimeout(()=> card.remove(), 260);
+    }
+    card.querySelector('.r-close').addEventListener('click', remove);
+    container.appendChild(card);
+    setTimeout(remove, 12000);
+
+    if('Notification' in window && Notification.permission==='granted'){
+      try{
+        const n = new Notification(`${className} · ${subject}`, {
+          body: `Dars ${time} da boshlanadi — 5 daqiqa qoldi!`,
+          icon: 'icon-192.png',
+          tag: className+'-'+time,
+          silent: false
+        });
+        n.onclick = ()=>{ window.focus(); n.close(); };
+      }catch(e){ /* Notification unsupported in this context */ }
+    }
+  }
+  function checkReminders(){
+    if(!notificationsOn()) return;
+    const now = new Date();
+    const dIdx = now.getDay()-1; // 0=Dush ... 5=Shan; Yakshanba(-1) darsi yo'q
+    if(dIdx<0 || dIdx>5) return;
+    const nowMin = now.getHours()*60 + now.getMinutes();
+    const todayKey = now.toDateString();
+    CLASSES.forEach(c=>{
+      c.schedule.forEach(row=>{
+        const subj = row.cells[dIdx];
+        if(!subj) return;
+        const parts = row.time.split(':');
+        const hh = parseInt(parts[0],10), mm = parseInt(parts[1],10);
+        if(isNaN(hh) || isNaN(mm)) return;
+        const rowMin = hh*60+mm;
+        const diff = rowMin - nowMin;
+        if(diff>=4 && diff<=5){
+          const key = c.name+'|'+row.time+'|'+todayKey;
+          if(!notifiedKeys.has(key)){
+            notifiedKeys.add(key);
+            showReminder(c.name, subj, row.time);
+          }
+        }
+      });
+    });
+  }
+  checkReminders();
+  setInterval(checkReminders, 20000);
+
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', ()=>{
+      navigator.serviceWorker.register('sw.js').catch(()=>{ /* ignore if sw.js not served, e.g. preview sandbox */ });
+    });
+  }
+
+  renderPage();
+})();
+</script>
+</body>
+</html>
